@@ -19,7 +19,7 @@ export default function LoginPage() {
       <div className="bg-white p-10 rounded-xl shadow-md w-[400px]">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-slate-700">
-            ANAHP
+            POC - DASHBOARDS HOSPITALARES
           </h1>
 
           <p className="text-gray-500 mt-2">
