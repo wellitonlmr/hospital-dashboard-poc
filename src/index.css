@@ -1,0 +1,16 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+  @apply bg-gray-100 text-gray-900;
+}
+
+.dark body {
+  @apply bg-slate-950 text-white;
+}
