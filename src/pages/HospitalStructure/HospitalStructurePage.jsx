@@ -1,83 +1,168 @@
-import { useEffect, useState } from "react"
+import { useMemo, useState } from "react"
 
+import HospitalFilters from "../../components/hospital/HospitalFilters"
 import HospitalModal from "../../components/hospital/HospitalModal"
 import HospitalTable from "../../components/hospital/HospitalTable"
-import HospitalFilters from "../../components/hospital/HospitalFilters"
 
 import {
   getHospitals,
   saveHospitals,
 } from "../../services/hospitalService"
 
+function buildTree(data, parentId = null, level = 0) {
+  return data
+    .filter((item) => item.parentId === parentId)
+    .flatMap((item) => [
+      {
+        ...item,
+        level,
+      },
+      ...buildTree(data, item.id, level + 1),
+    ])
+}
+
+function getDescendantIds(data, parentId) {
+  const children = data.filter(
+    (item) => item.parentId === parentId
+  )
+
+  return children.flatMap((child) => [
+    child.id,
+    ...getDescendantIds(data, child.id),
+  ])
+}
+
+function calculateTotal(data, itemId) {
+  const item = data.find((entry) => entry.id === itemId)
+
+  if (!item) {
+    return 0
+  }
+
+  const children = data.filter(
+    (entry) => entry.parentId === itemId
+  )
+
+  return children.reduce(
+    (total, child) =>
+      total + calculateTotal(data, child.id),
+    Number(item.ownValue || 0)
+  )
+}
+
+function getLevel(data, item) {
+  if (!item.parentId) {
+    return 0
+  }
+
+  const parent = data.find(
+    (entry) => entry.id === item.parentId
+  )
+
+  if (!parent) {
+    return 0
+  }
+
+  return getLevel(data, parent) + 1
+}
+
 export default function HospitalStructurePage() {
-  const [data, setData] = useState([])
-
-  const [search, setSearch] =
-    useState("")
-
+  const [data, setData] = useState(() =>
+    getHospitals()
+  )
+  const [search, setSearch] = useState("")
   const [openModal, setOpenModal] =
     useState(false)
-
   const [editingItem, setEditingItem] =
     useState(null)
 
-  useEffect(() => {
-    setData(getHospitals())
-  }, [])
+  function persist(updated) {
+    setData(updated)
+    saveHospitals(updated)
+  }
 
   function handleSave(item) {
-    let updated = []
-
-    if (editingItem) {
-      updated = data.map((d) =>
-        d.id === editingItem.id
-          ? {
-              ...item,
-              id: editingItem.id,
-            }
-          : d
-      )
-    } else {
-      updated = [
-        ...data,
-        {
-          ...item,
-          id: Date.now(),
-        },
-      ]
+    const normalizedItem = {
+      title: item.title,
+      description: item.description,
+      type: item.type,
+      status: item.status,
+      parentId: item.parentId
+        ? Number(item.parentId)
+        : null,
+      ownValue: Number(item.ownValue || 0),
     }
 
-    setData(updated)
+    const updated = editingItem
+      ? data.map((entry) =>
+          entry.id === editingItem.id
+            ? {
+                ...normalizedItem,
+                id: editingItem.id,
+              }
+            : entry
+        )
+      : [
+          ...data,
+          {
+            ...normalizedItem,
+            id: Date.now(),
+          },
+        ]
 
-    saveHospitals(updated)
-
+    persist(updated)
     setOpenModal(false)
-
     setEditingItem(null)
   }
 
   function handleDelete(id) {
-    const updated = data.filter(
-      (item) => item.id !== id
+    const idsToRemove = [
+      id,
+      ...getDescendantIds(data, id),
+    ]
+
+    persist(
+      data.filter(
+        (item) => !idsToRemove.includes(item.id)
+      )
     )
-
-    setData(updated)
-
-    saveHospitals(updated)
   }
 
   function handleEdit(item) {
     setEditingItem(item)
-
     setOpenModal(true)
   }
 
-  const filteredData = data.filter(
-    (item) =>
-      item.title
-        .toLowerCase()
-        .includes(search.toLowerCase())
+  const enrichedData = useMemo(
+    () =>
+      data.map((item) => ({
+        ...item,
+        totalValue: calculateTotal(data, item.id),
+      })),
+    [data]
   )
+
+  const filteredData = useMemo(() => {
+    const normalizedSearch = search.toLowerCase()
+    const filtered = enrichedData.filter(
+      (item) =>
+        item.title
+          .toLowerCase()
+          .includes(normalizedSearch) ||
+        (item.description || "")
+          .toLowerCase()
+          .includes(normalizedSearch)
+    )
+
+    if (!search) {
+      return buildTree(enrichedData)
+    }
+
+    return filtered.map((item) => ({
+      ...item,
+      level: getLevel(enrichedData, item),
+    }))
+  }, [enrichedData, search])
 
   return (
     <div className="space-y-6">
@@ -96,7 +181,7 @@ export default function HospitalStructurePage() {
           </h1>
 
           <p className="text-gray-500">
-            Gestão de setores hospitalares
+            Cadastro de categorias, subcategorias e totais consolidados
           </p>
         </div>
 
@@ -114,7 +199,7 @@ export default function HospitalStructurePage() {
           rounded-2xl
         "
         >
-          Novo Setor
+          Nova Categoria
         </button>
       </div>
 
@@ -130,13 +215,12 @@ export default function HospitalStructurePage() {
       />
 
       <HospitalModal
-  key={editingItem?.id || "new"}
-  open={openModal}
-        onClose={() =>
-          setOpenModal(false)
-        }
+        key={editingItem?.id || "new"}
+        open={openModal}
+        onClose={() => setOpenModal(false)}
         onSave={handleSave}
         editingItem={editingItem}
+        categories={data}
       />
     </div>
   )

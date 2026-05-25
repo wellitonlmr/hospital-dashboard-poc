@@ -21,9 +21,11 @@ export default function DashboardFilters() {
       </select>
 
       <select className="border rounded-lg px-3 py-2 dark:bg-slate-800">
-        <option>Todos setores</option>
+        <option>Todos os setores</option>
         <option>UTI</option>
         <option>Centro Cirúrgico</option>
+        <option>Emergência</option>
+        <option>Internação</option>
       </select>
 
       <select className="border rounded-lg px-3 py-2 dark:bg-slate-800">

@@ -24,11 +24,19 @@ export default function HospitalTable({
         <thead>
           <tr className="border-b">
             <th className="text-left p-4">
-              Setor
+              Categoria
             </th>
 
             <th className="text-left p-4">
               Tipo
+            </th>
+
+            <th className="text-left p-4">
+              Valor próprio
+            </th>
+
+            <th className="text-left p-4">
+              Total consolidado
             </th>
 
             <th className="text-left p-4">
@@ -52,8 +60,17 @@ export default function HospitalTable({
             "
             >
               <td className="p-4">
-                <div>
+                <div
+                  style={{
+                    paddingLeft: `${item.level * 24}px`,
+                  }}
+                >
                   <p className="font-semibold">
+                    {item.level > 0 && (
+                      <span className="text-gray-400 mr-2">
+                        -
+                      </span>
+                    )}
                     {item.title}
                   </p>
 
@@ -76,6 +93,14 @@ export default function HospitalTable({
                 >
                   {item.type}
                 </span>
+              </td>
+
+              <td className="p-4">
+                {item.ownValue}
+              </td>
+
+              <td className="p-4 font-semibold">
+                {item.totalValue}
               </td>
 
               <td className="p-4">
@@ -106,6 +131,7 @@ export default function HospitalTable({
                     hover:bg-slate-100
                     dark:hover:bg-slate-700
                   "
+                    aria-label={`Editar ${item.title}`}
                   >
                     <Pencil size={18} />
                   </button>
@@ -120,6 +146,7 @@ export default function HospitalTable({
                     hover:bg-red-100
                     text-red-500
                   "
+                    aria-label={`Excluir ${item.title}`}
                   >
                     <Trash2 size={18} />
                   </button>
