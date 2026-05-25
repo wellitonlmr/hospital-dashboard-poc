@@ -3,28 +3,49 @@ const STORAGE_KEY = "hospital_data"
 const initialData = [
   {
     id: 1,
-    title: "Diretoria Médica",
-    description: "Coordenação médica",
-    type: "Hospital",
-    status: "Ativo",
-  },
-
-  {
-    id: 2,
-    title: "UTI Adulto",
-    description: "Pacientes críticos",
+    title: "Farmacia",
+    description: "Estoque central de medicamentos",
     type: "Assistencial",
     status: "Ativo",
+    parentId: null,
+    ownValue: 20,
   },
-
+  {
+    id: 2,
+    title: "Farmacia satelite",
+    description: "Apoio aos setores assistenciais",
+    type: "Assistencial",
+    status: "Ativo",
+    parentId: 1,
+    ownValue: 10,
+  },
   {
     id: 3,
+    title: "UTI Adulto",
+    description: "Pacientes criticos",
+    type: "Assistencial",
+    status: "Ativo",
+    parentId: null,
+    ownValue: 18,
+  },
+  {
+    id: 4,
     title: "TI",
-    description: "Tecnologia da informação",
+    description: "Tecnologia da informacao",
     type: "Administrativo",
     status: "Inativo",
+    parentId: null,
+    ownValue: 6,
   },
 ]
+
+function normalizeItem(item) {
+  return {
+    ...item,
+    parentId: item.parentId ?? null,
+    ownValue: Number(item.ownValue || 0),
+  }
+}
 
 export function getHospitals() {
   const data = localStorage.getItem(STORAGE_KEY)
@@ -38,12 +59,28 @@ export function getHospitals() {
     return initialData
   }
 
-  return JSON.parse(data)
+  const parsedData = JSON.parse(data)
+  const isLegacyData = parsedData.every(
+    (item) =>
+      item.parentId === undefined &&
+      item.ownValue === undefined
+  )
+
+  if (isLegacyData) {
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify(initialData)
+    )
+
+    return initialData
+  }
+
+  return parsedData.map(normalizeItem)
 }
 
 export function saveHospitals(data) {
   localStorage.setItem(
     STORAGE_KEY,
-    JSON.stringify(data)
+    JSON.stringify(data.map(normalizeItem))
   )
 }

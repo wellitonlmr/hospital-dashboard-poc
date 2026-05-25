@@ -16,7 +16,7 @@ export default function HospitalFilters({
     >
       <input
         type="text"
-        placeholder="Buscar setor..."
+        placeholder="Buscar categoria..."
         value={search}
         onChange={(e) =>
           setSearch(e.target.value)
