@@ -1,16 +1,31 @@
 import {
   BrowserRouter,
-  Routes,
-  Route,
   Navigate,
+  Route,
+  Routes,
 } from "react-router-dom"
 
 import MainLayout from "../layouts/MainLayout"
 
-import LoginPage from "../pages/Login/LoginPage"
 import DashboardPage from "../pages/Dashboard/DashboardPage"
 import HospitalStructurePage from "../pages/HospitalStructure/HospitalStructurePage"
+import LoginPage from "../pages/Login/LoginPage"
+import { dashboardBlocks } from "../mocks/dashboardData"
 import ProtectedRoute from "./ProtectedRoute"
+
+const firstDashboardBlock = dashboardBlocks[0].id
+
+function ProtectedLayout({
+  children,
+}) {
+  return (
+    <ProtectedRoute>
+      <MainLayout>
+        {children}
+      </MainLayout>
+    </ProtectedRoute>
+  )
+}
 
 export default function AppRoutes() {
   return (
@@ -22,26 +37,32 @@ export default function AppRoutes() {
         />
 
         <Route
-  path="/dashboard"
-  element={
-    <ProtectedRoute>
-      <MainLayout>
-        <DashboardPage />
-      </MainLayout>
-    </ProtectedRoute>
-  }
-/>
+          path="/dashboard"
+          element={
+            <Navigate
+              to={`/dashboard/${firstDashboardBlock}`}
+              replace
+            />
+          }
+        />
 
-       <Route
-  path="/hospital-structure"
-  element={
-    <ProtectedRoute>
-      <MainLayout>
-        <HospitalStructurePage />
-      </MainLayout>
-    </ProtectedRoute>
-  }
-/>
+        <Route
+          path="/dashboard/:blockId"
+          element={
+            <ProtectedLayout>
+              <DashboardPage />
+            </ProtectedLayout>
+          }
+        />
+
+        <Route
+          path="/hospital-structure"
+          element={
+            <ProtectedLayout>
+              <HospitalStructurePage />
+            </ProtectedLayout>
+          }
+        />
 
         <Route
           path="*"

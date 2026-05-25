@@ -4,8 +4,11 @@ export default function KpiCard({
   title,
   value,
   variation,
+  tone,
 }) {
-  const positive = variation.includes("+")
+  const positive =
+    tone === "positive" ||
+    (!tone && variation.includes("+"))
 
   return (
     <motion.div
