@@ -32,7 +32,7 @@ export default function HospitalTable({
             </th>
 
             <th className="text-left p-4">
-              Valor proprio
+              Valor próprio
             </th>
 
             <th className="text-left p-4">
@@ -44,7 +44,7 @@ export default function HospitalTable({
             </th>
 
             <th className="text-right p-4">
-              Acoes
+              Ações
             </th>
           </tr>
         </thead>

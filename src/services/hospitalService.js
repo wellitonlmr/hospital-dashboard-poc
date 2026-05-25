@@ -3,7 +3,7 @@ const STORAGE_KEY = "hospital_data"
 const initialData = [
   {
     id: 1,
-    title: "Farmacia",
+    title: "Farmácia",
     description: "Estoque central de medicamentos",
     type: "Assistencial",
     status: "Ativo",
@@ -12,7 +12,7 @@ const initialData = [
   },
   {
     id: 2,
-    title: "Farmacia satelite",
+    title: "Farmácia satélite",
     description: "Apoio aos setores assistenciais",
     type: "Assistencial",
     status: "Ativo",
@@ -22,7 +22,7 @@ const initialData = [
   {
     id: 3,
     title: "UTI Adulto",
-    description: "Pacientes criticos",
+    description: "Pacientes críticos",
     type: "Assistencial",
     status: "Ativo",
     parentId: null,
@@ -31,7 +31,7 @@ const initialData = [
   {
     id: 4,
     title: "TI",
-    description: "Tecnologia da informacao",
+    description: "Tecnologia da informação",
     type: "Administrativo",
     status: "Inativo",
     parentId: null,

@@ -107,7 +107,7 @@ export default function HospitalModal({
         >
           <input
             name="title"
-            placeholder="Titulo"
+            placeholder="Título"
             value={form.title}
             onChange={handleChange}
             className="
@@ -122,7 +122,7 @@ export default function HospitalModal({
 
           <textarea
             name="description"
-            placeholder="Descricao"
+            placeholder="Descrição"
             value={form.description}
             onChange={handleChange}
             className="
@@ -166,7 +166,7 @@ export default function HospitalModal({
             type="number"
             min="0"
             step="1"
-            placeholder="Valor proprio"
+            placeholder="Valor próprio"
             value={form.ownValue}
             onChange={handleChange}
             className="
