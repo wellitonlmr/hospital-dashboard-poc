@@ -1,4 +1,8 @@
-import { useMemo, useState } from "react"
+import {
+  useEffect,
+  useMemo,
+  useState,
+} from "react"
 
 import HospitalFilters from "../../components/hospital/HospitalFilters"
 import HospitalModal from "../../components/hospital/HospitalModal"
@@ -67,21 +71,32 @@ function getLevel(data, item) {
 }
 
 export default function HospitalStructurePage() {
-  const [data, setData] = useState(() =>
-    getHospitals()
-  )
+  const [data, setData] = useState([])
+  const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState("")
   const [openModal, setOpenModal] =
     useState(false)
   const [editingItem, setEditingItem] =
     useState(null)
 
-  function persist(updated) {
-    setData(updated)
-    saveHospitals(updated)
+  useEffect(() => {
+    async function loadHospitals() {
+      const hospitals = await getHospitals()
+
+      setData(hospitals)
+      setLoading(false)
+    }
+
+    loadHospitals()
+  }, [])
+
+  async function persist(updated) {
+    const savedData = await saveHospitals(updated)
+
+    setData(savedData)
   }
 
-  function handleSave(item) {
+  async function handleSave(item) {
     const normalizedItem = {
       title: item.title,
       description: item.description,
@@ -110,18 +125,18 @@ export default function HospitalStructurePage() {
           },
         ]
 
-    persist(updated)
+    await persist(updated)
     setOpenModal(false)
     setEditingItem(null)
   }
 
-  function handleDelete(id) {
+  async function handleDelete(id) {
     const idsToRemove = [
       id,
       ...getDescendantIds(data, id),
     ]
 
-    persist(
+    await persist(
       data.filter(
         (item) => !idsToRemove.includes(item.id)
       )
@@ -163,6 +178,10 @@ export default function HospitalStructurePage() {
       level: getLevel(enrichedData, item),
     }))
   }, [enrichedData, search])
+
+  if (loading) {
+    return <p className="text-gray-500">Carregando estrutura hospitalar...</p>
+  }
 
   return (
     <div className="space-y-6">

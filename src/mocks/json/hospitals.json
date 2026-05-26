@@ -1,0 +1,38 @@
+[
+  {
+    "id": 1,
+    "title": "Farmacia",
+    "description": "Estoque central de medicamentos",
+    "type": "Assistencial",
+    "status": "Ativo",
+    "parentId": null,
+    "ownValue": 20
+  },
+  {
+    "id": 2,
+    "title": "Farmacia satelite",
+    "description": "Apoio aos setores assistenciais",
+    "type": "Assistencial",
+    "status": "Ativo",
+    "parentId": 1,
+    "ownValue": 10
+  },
+  {
+    "id": 3,
+    "title": "UTI Adulto",
+    "description": "Pacientes criticos",
+    "type": "Assistencial",
+    "status": "Ativo",
+    "parentId": null,
+    "ownValue": 18
+  },
+  {
+    "id": 4,
+    "title": "TI",
+    "description": "Tecnologia da informacao",
+    "type": "Administrativo",
+    "status": "Inativo",
+    "parentId": null,
+    "ownValue": 6
+  }
+]
