@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react"
 import {
   Link,
   useLocation,
@@ -9,12 +10,24 @@ import {
   LogOut,
 } from "lucide-react"
 
-import { dashboardBlocks } from "../../mocks/dashboardData"
+import { getDashboardBlocks } from "../../services/dashboardService"
 
 export default function Sidebar() {
   const location = useLocation()
+  const [dashboardBlocks, setDashboardBlocks] =
+    useState([])
   const dashboardActive =
     location.pathname.startsWith("/dashboard")
+
+  useEffect(() => {
+    async function loadDashboardMenu() {
+      const blocks = await getDashboardBlocks()
+
+      setDashboardBlocks(blocks)
+    }
+
+    loadDashboardMenu()
+  }, [])
 
   return (
     <aside

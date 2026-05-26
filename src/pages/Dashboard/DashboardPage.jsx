@@ -1,16 +1,45 @@
+import { useEffect, useState } from "react"
 import { Navigate, useParams } from "react-router-dom"
 
 import DashboardBlock from "../../components/dashboard/DashboardBlock"
 import DashboardFilters from "../../components/dashboard/DashboardFilters"
 import KpiCard from "../../components/dashboard/KpiCard"
-
 import {
-  dashboardBlocks,
-  dashboardKpis,
-} from "../../mocks/dashboardData"
+  getDashboardBlocks,
+  getDashboardKpis,
+} from "../../services/dashboardService"
 
 export default function DashboardPage() {
   const { blockId } = useParams()
+  const [dashboardBlocks, setDashboardBlocks] =
+    useState([])
+  const [dashboardKpis, setDashboardKpis] =
+    useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function loadDashboard() {
+      const [blocks, kpis] = await Promise.all([
+        getDashboardBlocks(),
+        getDashboardKpis(),
+      ])
+
+      setDashboardBlocks(blocks)
+      setDashboardKpis(kpis)
+      setLoading(false)
+    }
+
+    loadDashboard()
+  }, [])
+
+  if (loading) {
+    return <p className="text-gray-500">Carregando dashboard...</p>
+  }
+
+  if (!dashboardBlocks.length) {
+    return <p className="text-gray-500">Nenhum dashboard disponivel.</p>
+  }
+
   const selectedBlock = dashboardBlocks.find(
     (block) => block.id === blockId
   )
