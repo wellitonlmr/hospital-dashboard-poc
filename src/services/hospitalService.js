@@ -1,43 +1,6 @@
-const STORAGE_KEY = "hospital_data"
+import initialHospitals from "../mocks/json/hospitals.json"
 
-const initialData = [
-  {
-    id: 1,
-    title: "Farmácia",
-    description: "Estoque central de medicamentos",
-    type: "Assistencial",
-    status: "Ativo",
-    parentId: null,
-    ownValue: 20,
-  },
-  {
-    id: 2,
-    title: "Farmácia satélite",
-    description: "Apoio aos setores assistenciais",
-    type: "Assistencial",
-    status: "Ativo",
-    parentId: 1,
-    ownValue: 10,
-  },
-  {
-    id: 3,
-    title: "UTI Adulto",
-    description: "Pacientes críticos",
-    type: "Assistencial",
-    status: "Ativo",
-    parentId: null,
-    ownValue: 18,
-  },
-  {
-    id: 4,
-    title: "TI",
-    description: "Tecnologia da informação",
-    type: "Administrativo",
-    status: "Inativo",
-    parentId: null,
-    ownValue: 6,
-  },
-]
+const STORAGE_KEY = "hospital_data"
 
 function normalizeItem(item) {
   return {
@@ -47,8 +10,13 @@ function normalizeItem(item) {
   }
 }
 
-export function getHospitals() {
+function getInitialData() {
+  return initialHospitals.map(normalizeItem)
+}
+
+export async function getHospitals() {
   const data = localStorage.getItem(STORAGE_KEY)
+  const initialData = getInitialData()
 
   if (!data) {
     localStorage.setItem(
@@ -78,9 +46,13 @@ export function getHospitals() {
   return parsedData.map(normalizeItem)
 }
 
-export function saveHospitals(data) {
+export async function saveHospitals(data) {
+  const normalizedData = data.map(normalizeItem)
+
   localStorage.setItem(
     STORAGE_KEY,
-    JSON.stringify(data.map(normalizeItem))
+    JSON.stringify(normalizedData)
   )
+
+  return normalizedData
 }

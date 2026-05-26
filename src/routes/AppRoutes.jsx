@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react"
 import {
   BrowserRouter,
   Navigate,
@@ -10,10 +11,8 @@ import MainLayout from "../layouts/MainLayout"
 import DashboardPage from "../pages/Dashboard/DashboardPage"
 import HospitalStructurePage from "../pages/HospitalStructure/HospitalStructurePage"
 import LoginPage from "../pages/Login/LoginPage"
-import { dashboardBlocks } from "../mocks/dashboardData"
+import { getDashboardBlocks } from "../services/dashboardService"
 import ProtectedRoute from "./ProtectedRoute"
-
-const firstDashboardBlock = dashboardBlocks[0].id
 
 function ProtectedLayout({
   children,
@@ -24,6 +23,38 @@ function ProtectedLayout({
         {children}
       </MainLayout>
     </ProtectedRoute>
+  )
+}
+
+function DashboardRedirect() {
+  const [firstBlockId, setFirstBlockId] =
+    useState(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function loadFirstDashboardBlock() {
+      const blocks = await getDashboardBlocks()
+
+      setFirstBlockId(blocks[0]?.id ?? null)
+      setLoading(false)
+    }
+
+    loadFirstDashboardBlock()
+  }, [])
+
+  if (loading) {
+    return <p className="text-gray-500">Carregando dashboard...</p>
+  }
+
+  if (!firstBlockId) {
+    return <p className="text-gray-500">Nenhum dashboard disponivel.</p>
+  }
+
+  return (
+    <Navigate
+      to={`/dashboard/${firstBlockId}`}
+      replace
+    />
   )
 }
 
@@ -39,10 +70,9 @@ export default function AppRoutes() {
         <Route
           path="/dashboard"
           element={
-            <Navigate
-              to={`/dashboard/${firstDashboardBlock}`}
-              replace
-            />
+            <ProtectedLayout>
+              <DashboardRedirect />
+            </ProtectedLayout>
           }
         />
 
