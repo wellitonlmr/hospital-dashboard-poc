@@ -11,6 +11,7 @@ import MainLayout from "../layouts/MainLayout"
 import DashboardPage from "../pages/Dashboard/DashboardPage"
 import HospitalStructurePage from "../pages/HospitalStructure/HospitalStructurePage"
 import LoginPage from "../pages/Login/LoginPage"
+import SimpleCrudPage from "../pages/SimpleCrud/SimpleCrudPage"
 import { getDashboardBlocks } from "../services/dashboardService"
 import ProtectedRoute from "./ProtectedRoute"
 
@@ -90,6 +91,15 @@ export default function AppRoutes() {
           element={
             <ProtectedLayout>
               <HospitalStructurePage />
+            </ProtectedLayout>
+          }
+        />
+
+        <Route
+          path="/cadastros/:moduleId"
+          element={
+            <ProtectedLayout>
+              <SimpleCrudPage />
             </ProtectedLayout>
           }
         />

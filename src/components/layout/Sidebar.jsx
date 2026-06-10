@@ -4,13 +4,31 @@ import {
   useLocation,
 } from "react-router-dom"
 import {
+  Activity,
   Building2,
   ChevronDown,
+  ClipboardList,
+  DollarSign,
+  FileText,
   LayoutDashboard,
   LogOut,
+  Package,
+  Stethoscope,
+  Users,
 } from "lucide-react"
 
+import { crudModules } from "../../modules/crudModules"
 import { getDashboardBlocks } from "../../services/dashboardService"
+
+const moduleIcons = {
+  pacientes: Users,
+  medicos: Stethoscope,
+  prontuarios: FileText,
+  prescricoes: ClipboardList,
+  exames: Activity,
+  faturamento: DollarSign,
+  estoque: Package,
+}
 
 export default function Sidebar() {
   const location = useLocation()
@@ -133,6 +151,38 @@ export default function Sidebar() {
             Estrutura Hospitalar
           </span>
         </Link>
+
+        {crudModules.map((module) => {
+          const Icon = moduleIcons[module.id]
+          const path = `/cadastros/${module.id}`
+          const active =
+            location.pathname === path
+
+          return (
+            <Link
+              key={module.id}
+              to={path}
+              className={`
+              flex
+              items-center
+              gap-3
+              p-3
+              rounded-lg
+              transition
+              ${
+                active
+                  ? "bg-slate-700 text-white"
+                  : "hover:bg-slate-100 dark:hover:bg-slate-800"
+              }
+            `}
+            >
+              <Icon size={18} />
+              <span className="hidden xl:block">
+                {module.title}
+              </span>
+            </Link>
+          )
+        })}
       </nav>
 
       <div className="p-4 border-t border-slate-200 dark:border-slate-700">
